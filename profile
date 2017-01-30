@@ -19,7 +19,6 @@ calc() { awk "BEGIN{print $*}"; }
 trap 'after_command' DEBUG
 
 function prompt_command() {
-
   BASHCHONFIG_VAR=$?
   BASHCHONFIG_HIST="$(history 1 | cut -c 8-)"
   BASHCHONFIG_CMD="$(echo $BASHCHONFIG_HIST | cut -d ' ' -f 1)"
@@ -29,6 +28,13 @@ function prompt_command() {
 
   BASHCHONFIG_TIME="$(gdate +%s%3N)"
   BASHCHONFIG_TIMEISSET=0
+  BASHCONFIG_GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+
+  BASHCONFIG_OUT="[$BASHCHONFIG_HIST] - ${BASHCHONFIG_TIMEPASSED}s"
+  
+  if [[ "$BASHCONFIG_GIT_BRANCH" != "" ]] ;then
+    BASHCONFIG_OUT="$BASHCONFIG_OUT - $BASHCONFIG_GIT_BRANCH"
+  fi
 
   if [ -e "$VIRTUAL_ENV" ]; then
     BASHCHONFIG_TITLE="${VIRTUAL_ENV#$WORKON_HOME/} - "
@@ -41,12 +47,13 @@ function prompt_command() {
   if [ "$BASHCHONFIG_INIT" -ne "0" ] ;then
     echo -n "${BASHCHONFIG_TC_TEXT}"
     if [ "$BASHCHONFIG_VAR" -eq "0" ] ;then
-      echo -n "${BASHCHONFIG_TC_BG_SUCC} [$BASHCHONFIG_HIST] - ${BASHCHONFIG_TIMEPASSED}s - Success! - ✓"
+      echo -n "${BASHCHONFIG_TC_BG_SUCC} ✓ "
       BASHCHONFIG_TITLE="$BASHCHONFIG_TITLE - $BASHCHONFIG_CMD"
     else
-      echo -n "${BASHCHONFIG_TC_BG_FAIL} [$BASHCHONFIG_HIST] - ${BASHCHONFIG_TIMEPASSED}s - Failed! - x"
+      echo -n "${BASHCHONFIG_TC_BG_FAIL} x "
       BASHCHONFIG_TITLE="$BASHCHONFIG_TITLE - Failed"
     fi
+    echo -n "$BASHCONFIG_OUT"
     echo "${BASHCHONFIG_CLREOL}${BASHCHONFIG_TC_RESET}"
   fi
 
