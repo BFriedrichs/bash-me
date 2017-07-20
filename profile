@@ -31,7 +31,7 @@ function prompt_command() {
   BASHCONFIG_GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 
   BASHCONFIG_OUT="[$BASHCHONFIG_HIST] - ${BASHCHONFIG_TIMEPASSED}s"
-  
+
   if [[ "$BASHCONFIG_GIT_BRANCH" != "" ]] ;then
     BASHCONFIG_OUT="$BASHCONFIG_OUT - $BASHCONFIG_GIT_BRANCH"
   fi
@@ -62,4 +62,4 @@ function prompt_command() {
 
   BASHCHONFIG_INIT=1
 }
-export PROMPT_COMMAND=prompt_command
+export PROMPT_COMMAND="prompt_command; $PROMPT_COMMAND"
